@@ -1,15 +1,16 @@
 import os
+import traceback
 from flask import Flask, request, jsonify
 from supabase import create_client, Client
 
 app = Flask(__name__)
 
-# 1. Supabase 정보 입력 (오류 교정 완료)
-# 🌟 끝에 /rest/v1/ 을 완전히 제거했습니다.
+# 1. Supabase 정보 입력
 SUPABASE_URL = "https://vfsuctmqwweqlvfhzahh.supabase.co"
 
-# 🌟 중요: 반드시 'eyJhb...'로 시작하는 아주 긴 Anon Public Key 전체를 입력하세요.
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmc3VjdG1xd3dlcWx2Zmh6YWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MTM4OTMsImV4cCI6MjA5Njk4OTg5M30.DIEjb37bJ0Bs73dtWgDajVsWSX89Q2PQ3uk89keaQhA"
+# 🌟 중요: RLS 에러(500)를 해결하기 위해 'service_role' 키를 사용합니다.
+# Supabase 대시보드 -> Settings -> API -> Project API keys 에서 service_role (secret) 키를 복사해서 아래에 넣으세요.
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmc3VjdG1xd3dlcWx2Zmh6YWhoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTQxMzg5MywiZXhwIjoyMDk2OTg5ODkzfQ.jv_aMwmwJQfoZrmUK0i-fi87RsBzjf0CJZFCSG-Ry6I"
 
 # 2. Supabase 클라이언트 초기화
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -18,17 +19,17 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 def home():
     return "Server is running!"
 
-import traceback
-
 @app.route('/log', methods=['POST'])
 def receive_log():
     try:
         data = request.json
         client_text = data.get('text', '')
 
+        # 데이터가 비어있으면 400 에러 반환
         if not client_text:
             return jsonify({"status": "error", "message": "No data"}), 400
 
+        # 데이터베이스에 삽입
         result = (
             supabase
             .table("web_logs")
