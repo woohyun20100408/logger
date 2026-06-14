@@ -4,9 +4,12 @@ from supabase import create_client, Client
 
 app = Flask(__name__)
 
-# 1. Supabase 정보 입력 (본인의 정보로 변경)
-SUPABASE_URL = "https://vfsuctmqwweqlvfhzahh.supabase.co/rest/v1/"
-SUPABASE_KEY = "sb_publishable_I2j4R_uDL_7YgsIXf-g-vw_c7oRC0mS"
+# 1. Supabase 정보 입력 (오류 교정 완료)
+# 🌟 끝에 /rest/v1/ 을 완전히 제거했습니다.
+SUPABASE_URL = "https://vfsuctmqwweqlvfhzahh.supabase.co"
+
+# 🌟 중요: 반드시 'eyJhb...'로 시작하는 아주 긴 Anon Public Key 전체를 입력하세요.
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmc3VjdG1xd3dlcWx2Zmh6YWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MTM4OTMsImV4cCI6MjA5Njk4OTg5M30.DIEjb37bJ0Bs73dtWgDajVsWSX89Q2PQ3uk89keaQhA"
 
 # 2. Supabase 클라이언트 초기화
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -29,9 +32,9 @@ def receive_log():
         return jsonify({"status": "success"})
         
     except Exception as e:
+        # 혹시 오류가 나면 어떤 오류인지 JSON 결과로 친절히 알려줍니다.
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    # 🌟 Render는 PORT 환경 변수를 요구하므로 os.environ을 사용합니다.
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
