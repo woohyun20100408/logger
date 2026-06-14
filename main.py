@@ -18,23 +18,37 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 def home():
     return "Server is running!"
 
+import traceback
+
 @app.route('/log', methods=['POST'])
 def receive_log():
     try:
         data = request.json
         client_text = data.get('text', '')
-        
+
         if not client_text:
             return jsonify({"status": "error", "message": "No data"}), 400
-            
-        # Supabase DB에 저장
-        supabase.table("web_logs").insert({"content": client_text}).execute()
-        return jsonify({"status": "success"})
-        
-    except Exception as e:
-        # 혹시 오류가 나면 어떤 오류인지 JSON 결과로 친절히 알려줍니다.
-        return jsonify({"status": "error", "message": str(e)}), 500
 
+        result = (
+            supabase
+            .table("web_logs")
+            .insert({"content": client_text})
+            .execute()
+        )
+
+        print("INSERT RESULT:", result)
+
+        return jsonify({"status": "success"})
+
+    except Exception as e:
+        print("ERROR:", repr(e))
+        traceback.print_exc()
+
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+    
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
