@@ -5,8 +5,8 @@ from supabase import create_client, Client
 app = Flask(__name__)
 
 # 1. Supabase 정보 입력 (본인의 정보로 변경)
-SUPABASE_URL = "https://supabase.co"
-SUPABASE_KEY = "본인의_Anon_Public_Key_입력"
+SUPABASE_URL = "https://vfsuctmqwweqlvfhzahh.supabase.co/rest/v1/"
+SUPABASE_KEY = "sb_publishable_I2j4R_uDL_7YgsIXf-g-vw_c7oRC0mS"
 
 # 2. Supabase 클라이언트 초기화
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
